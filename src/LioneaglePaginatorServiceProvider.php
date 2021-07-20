@@ -12,7 +12,7 @@ class LioneaglePaginatorServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->publishes([
                 __DIR__ . '/../config/lioneagle-paginator.php' => config_path('lioneagle-paginator.php'),
-            ], 'config');
+            ], 'lioneagle-config');
         }
 
         $this->registerMacro();

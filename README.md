@@ -15,7 +15,7 @@ You can publish and run the migrations with:
 You can publish the config file with:
 
 ```bash
-php artisan vendor:publish --provider="Lioneagle\LioneaglePaginator\LioneaglePaginatorServiceProvider" --tag="lioneagle-paginator-config"
+php artisan vendor:publish --provider="Lioneagle\LioneaglePaginator\LioneaglePaginatorServiceProvider" --tag="lioneagle-config"
 ```
 
 ## Usage
