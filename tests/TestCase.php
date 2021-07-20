@@ -1,36 +1,60 @@
 <?php
 
-namespace VendorName\Skeleton\Tests;
+namespace Lioneagle\LioneaglePaginator\Tests;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Route;
+use Lioneagle\LioneaglePaginator\LioneaglePaginatorServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
-use VendorName\Skeleton\SkeletonServiceProvider;
 
+/**
+ * @internal
+ * @coversNothing
+ */
 class TestCase extends Orchestra
 {
     public function setUp(): void
     {
         parent::setUp();
 
-        Factory::guessFactoryNamesUsing(
-            fn (string $modelName) => 'VendorName\\Skeleton\\Database\\Factories\\'.class_basename($modelName).'Factory'
-        );
-    }
-
-    protected function getPackageProviders($app)
-    {
-        return [
-            SkeletonServiceProvider::class,
-        ];
+        $this->setUpDatabase($this->app);
+        $this->setUpRoutes();
     }
 
     public function getEnvironmentSetUp($app)
     {
         config()->set('database.default', 'testing');
+    }
 
-        /*
-        include_once __DIR__.'/../database/migrations/create_skeleton_table.php.stub';
-        (new \CreatePackageTable())->up();
-        */
+    protected function getPackageProviders($app)
+    {
+        return [
+            LioneaglePaginatorServiceProvider::class,
+        ];
+    }
+
+    protected function setUpDatabase(Application $app)
+    {
+        // Create the table
+        $app['db']->connection()->getSchemaBuilder()->create('models', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->timestamps();
+        });
+
+        // Insert the models
+        collect(range(1, 50))->each(function ($index) {
+            Model::create([
+                'name' => "Name - {$index}",
+            ]);
+        });
+    }
+
+    protected function setUpRoutes()
+    {
+        Route::get('/models', function () {
+            return Model::paginator();
+        });
     }
 }

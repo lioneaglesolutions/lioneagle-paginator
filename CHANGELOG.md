@@ -1,7 +1,8 @@
 # Changelog
 
-All notable changes to `:package_name` will be documented in this file.
+All notable changes to `lioneagle-paginator` will be documented in this file.
 
-## 1.0.0 - 202X-XX-XX
+## 1.0.0 - 2021-20-01
 
-- initial release
+-   Initial Release
+-   Add `paginator()` query builder macro
