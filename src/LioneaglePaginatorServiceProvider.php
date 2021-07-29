@@ -3,6 +3,8 @@
 namespace Lioneagle\LioneaglePaginator;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\ServiceProvider;
 
 class LioneaglePaginatorServiceProvider extends ServiceProvider
@@ -25,18 +27,20 @@ class LioneaglePaginatorServiceProvider extends ServiceProvider
 
     protected function registerMacro()
     {
-        Builder::macro('paginator', function () {
-            $pageSizeParam = config('lioneagle-paginator.page_size.url_parameter');
-            $pageNumberParam = config('lioneagle-paginator.page_number.url_parameter');
+        collect([Builder::class, HasManyThrough::class, BelongsTo::class])->each(function ($builder) {
+            $builder::macro('paginator', function ($perPage = null, $columns = ['*'], $pageName = 'page', $page = null) {
+                $pageSizeParam = config('lioneagle-paginator.page_size.url_parameter');
+                $pageNumberParam = config('lioneagle-paginator.page_number.url_parameter');
 
-            $defaultPageSize = config('lioneagle-paginator.page_size.default');
-            $defaultPageNumber = config('lioneagle-paginator.page_number.default');
+                $defaultPageSize = config('lioneagle-paginator.page_size.default');
+                $defaultPageNumber = config('lioneagle-paginator.page_number.default');
 
-            /** @var \Illuminate\Database\Eloquent\Builder $this */
-            $pageSize = (int) request()->input("page.{$pageSizeParam}", $defaultPageSize);
-            $pageNumber = (int) request()->input("page.{$pageNumberParam}", $defaultPageNumber);
+                /** @var \Illuminate\Database\Eloquent\Builder $this */
+                $pageSize = $perPage ?? (int) request()->input("page.{$pageSizeParam}", $defaultPageSize);
+                $pageNumber = $page ?? (int) request()->input("page.{$pageNumberParam}", $defaultPageNumber);
 
-            return $this->paginate($pageSize, ['*'], 'page', $pageNumber);
+                return $this->paginate($pageSize, $columns, $pageName, $pageNumber);
+            });
         });
     }
 }
