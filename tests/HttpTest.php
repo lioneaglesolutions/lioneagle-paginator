@@ -8,35 +8,50 @@ namespace Lioneagle\LioneaglePaginator\Tests;
  */
 class HttpTest extends TestCase
 {
-    public function testThePageSizeParameterIsParsed()
+    /**
+     * @test
+     */
+    public function the_page_size_parameter_is_parsed()
     {
         $response = $this->get('/models?page[size]=2');
 
         $response->assertJsonFragment(['per_page' => 2]);
     }
 
-    public function testThePageSizeDefaultIsParsed()
+    /**
+     * @test
+     */
+    public function the_page_size_default_is_parsed()
     {
         $response = $this->get('/models');
 
         $response->assertJsonFragment(['per_page' => config('lioneagle-paginator.page_size.default')]);
     }
 
-    public function testThePageNumberParameterIsParsed()
+    /**
+     * @test
+     */
+    public function the_page_number_parameter_is_parsed()
     {
         $response = $this->get('/models?page[number]=2');
 
         $response->assertJsonFragment(['current_page' => 2]);
     }
 
-    public function testThePageNumberDefaultIsParsed()
+    /**
+     * @test
+     */
+    public function the_page_number_default_is_parsed()
     {
         $response = $this->get('/models');
 
         $response->assertJsonFragment(['current_page' => config('lioneagle-paginator.page_number.default')]);
     }
 
-    public function testThePageSizeAndPageNumberWorkTogether()
+    /**
+     * @test
+     */
+    public function the_page_size_and_page_number_work_together()
     {
         $response = $this->get('/models?page[size]=25&page[number]=2');
 
@@ -44,7 +59,10 @@ class HttpTest extends TestCase
         $response->assertJsonFragment(['current_page' => 2]);
     }
 
-    public function testACustomisedPageNumberParameterWillBeParsed()
+    /**
+     * @test
+     */
+    public function a_customised_page_number_parameter_will_be_parsed()
     {
         $customPageNumberParam = 'custom_param';
 
@@ -55,7 +73,10 @@ class HttpTest extends TestCase
         $response->assertJsonFragment(['current_page' => 2]);
     }
 
-    public function testACustomisedPageSizeParameterWillBeParsed()
+    /**
+     * @test
+     */
+    public function a_customised_page_size_parameter_will_be_parsed()
     {
         $customPageSizeParam = 'custom_param';
 
@@ -64,5 +85,31 @@ class HttpTest extends TestCase
         $response = $this->get("/models?page[{$customPageSizeParam}]=10");
 
         $response->assertJsonFragment(['per_page' => 10]);
+    }
+
+    /**
+     * @test
+     */
+    public function it_can_return_all_results()
+    {
+        $response = $this->get('/models?page[size]=-1');
+
+        $response->assertJsonCount(Model::count());
+        $response->assertJsonMissing(['per_page']);
+    }
+
+    /**
+     * @test
+     */
+    public function a_customised_all_results_param_will_be_parsed()
+    {
+        $customParam = '*';
+
+        config(['lioneagle-paginator.page_size.all_results' => $customParam]);
+
+        $response = $this->get('/models?page[size]=*');
+
+        $response->assertJsonCount(Model::count());
+        $response->assertJsonMissing(['per_page']);
     }
 }

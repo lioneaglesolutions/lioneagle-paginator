@@ -29,11 +29,18 @@ class LioneaglePaginatorServiceProvider extends ServiceProvider
     {
         collect([Builder::class, HasManyThrough::class, BelongsTo::class])->each(function ($builder) {
             $builder::macro('paginator', function ($perPage = null, $columns = ['*'], $pageName = 'page', $page = null) {
+                $getAllParam = config('lioneagle-paginator.page_size.all_results');
+
                 $pageSizeParam = config('lioneagle-paginator.page_size.url_parameter');
                 $pageNumberParam = config('lioneagle-paginator.page_number.url_parameter');
 
                 $defaultPageSize = config('lioneagle-paginator.page_size.default');
                 $defaultPageNumber = config('lioneagle-paginator.page_number.default');
+
+                if ($perPage == $getAllParam || request()->input("page.{$pageSizeParam}") == $getAllParam) {
+                    /** @var \Illuminate\Database\Eloquent\Builder $this */
+                    return $this->get();
+                }
 
                 /** @var \Illuminate\Database\Eloquent\Builder $this */
                 $pageSize = $perPage ?? (int) request()->input("page.{$pageSizeParam}", $defaultPageSize);

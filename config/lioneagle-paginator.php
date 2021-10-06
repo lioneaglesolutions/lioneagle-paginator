@@ -16,6 +16,11 @@ return [
          * The default page size
          */
         'default' => 25,
+
+        /**
+         * The parameter to be recognised to return all results
+         */
+        'all_results' => -1
     ],
 
     /**
