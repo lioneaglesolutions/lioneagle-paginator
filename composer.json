@@ -9,8 +9,7 @@
     "homepage": "https://github.com/lioneagle/lioneagle-paginator",
     "license": "MIT",
     "require": {
-        "php": "^8.0",
-        "illuminate/contracts": "^8.37"
+        "php": "^8.0"
     },
     "require-dev": {
         "orchestra/testbench": "^6.15",
